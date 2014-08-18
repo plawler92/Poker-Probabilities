@@ -1,0 +1,179 @@
+<html>
+<head>
+	<script src="//code.jquery.com/jquery-1.10.2.min.js"></script>
+	<style>
+		body{background:#339900;}
+		table{width:50px;background-color:white;}
+		table,th,td{border:1px solid black;border-collapse:collapse;}
+		th,td{padding:5px;}
+		.card{display:inline-block;width:30px;height:25px;border-style:solid;
+			border-color:black;border-radius:2px;border-width:1px;
+			background-color:white;text-align: center;}
+		.card2{display:inline-block;width:30px;height:25px;border-style:solid;
+			border-color:black;border-radius:2px;border-width:1px;
+			background-color:white;text-align: center;}
+		.red{color:red;}
+		.black{color:black;}		
+		.highlight{border-color:red;}
+		.not-clickable{background-color:#A9A9A9;}
+		.middle{position:absolute;left:30%;}
+
+		
+
+
+		
+	</style>
+	<script type='text/javascript'>
+		$(document).ready(function(){
+			var picking_card = false;
+			var add_id ='';
+			//works, use as example
+			/*$.post("/test",//url
+				{name:"patrick"},
+				function(data){
+					alert("data loaded: " + data.name);
+				});*/
+			$(".card").click(function(){
+				/*$.post("test2",
+					{card:$(this).html()},
+					function(data){
+						alert("data: " + data.card);
+					});*/
+				
+				if(picking_card == true && !$(this).hasClass('not-clickable')){
+					$('.card.not-clickable.'+add_id).removeClass('not-clickable');
+					$('.card.'+add_id).removeClass(add_id);
+					$('.card2.highlight').empty();
+					$('.card2.highlight').removeClass('red');
+					$('.card2.highlight').append($(this).html());
+					if($(this).hasClass('red')){
+						$('.card2.highlight').addClass('red');
+					}
+					
+					$('.card2.highlight').removeClass('highlight');								
+					$(this).addClass('not-clickable');
+					$(this).addClass(add_id);
+					picking_card = false;
+				}
+			})
+
+			$(".card2").click(function(){
+				if($(this).hasClass('highlight')){
+					$(this).removeClass('highlight');
+					picking_card = false;
+				}
+				else{
+					$("#pc1").removeClass('highlight');
+					$("#pc2").removeClass('highlight');
+					$(this).addClass('highlight');
+					picking_card = true;
+					add_id = $(this).attr('id');
+					//alert(add_id);
+
+				}
+			});
+
+			$("#players").change(function(){
+				$.post("/test",
+					{name:$("#players").val()},
+					function(data){
+						alert("data : " + data.name);
+					});
+			});	
+
+			$("#submit").click(function(){
+				$.post("/calculate",
+					{card1:$("#pc1").html(),card2:$("#pc2").html()},
+					function(data){
+						//do stuff here with calculated probabilities
+						//alert(data.flop_pair);
+						$("#table_div").empty();
+						/*$("#table_div").append("<table><tr><th></th><th>Flop</th><th>River</th><th>Turn</th></tr><tr><td>Pair</td><td>" + data.flop_pair +"</td><td>"+data.river_pair+"</td><td>"+data.turn_pair+"</td></tr><tr><td>Two Pair</td><td>" + data.flop_two_pair +"</td><td>"+data.river_two_pair+"</td><td>"+data.turn_two_pair+"</td></tr><tr><td>Three of a Kind</td><td>" + data.flop_three_kind +"</td><td>"+data.river_three_kind+"</td><td>"+data.turn_three_kind+"</td></tr><tr><td>Straight</td><td>" + data.flop_straight +"</td><td>"+data.river_straight+"</td><td>"+data.turn_straight+"</td></tr><tr><td>Flush</td><td>" + data.flop_flush +"</td><td>"+data.river_flush+"</td><td>"+data.turn_flush+"</td></tr><tr><td>Full House</td><td>" + data.flop_full_house +"</td><td>"+data.river_full_house+"</td><td>"+data.turn_full_house+"</td></tr><tr><td>Four of a Kind</td><td>" + data.flop_four_kind +"</td><td>"+data.river_four_kind+"</td><td>"+data.turn_four_kind+"</td></tr><tr><td>Straight Flush</td><td>" + data.flop_straight_flush +"</td><td>"+data.river_straight_flush+"</td><td>"+data.turn_straight_flush+"</td></tr></table>");*/
+
+						$("#table_div").append("<table><tr><th></th><th>Pair</th><th>Two Pair</th><th>Three of a Kind</th><th>Straight</th><th>Flush</th><th>Full House</th><th>Four of a Kind</th><th>Straight Flush</th></tr><tr><th>Flop</th><td>"+data.flop_pair+"</td><td>"+data.flop_two_pair+"</td><td>"+data.flop_three_kind+"</td><td>"+data.flop_straight+"</td><td>"+data.flop_flush+"</td><td>"+data.flop_full_house+"</td><td>"+data.flop_four_kind+"</td><td>"+data.flop_straight_flush+"</td></tr><tr><th>River</th><td>"+data.river_pair+"</td><td>"+data.river_two_pair+"</td><td>"+data.river_three_kind+"</td><td>"+data.river_straight+"</td><td>"+data.river_flush+"</td><td>"+data.river_full_house+"</td><td>"+data.river_four_kind+"</td><td>"+data.river_straight_flush+"</td></tr><tr><th>turn</th><td>"+data.turn_pair+"</td><td>"+data.turn_two_pair+"</td><td>"+data.turn_three_kind+"</td><td>"+data.turn_straight+"</td><td>"+data.turn_flush+"</td><td>"+data.turn_full_house+"</td><td>"+data.turn_four_kind+"</td><td>"+data.turn_straight_flush+"</td></tr>");
+					});
+			})	
+
+			
+		});
+		</script>
+
+
+</head>
+<body>
+	<div class="middle">
+	<h1 class="title">Texas Hold 'em Probability Calculator</h1>
+
+	<div id="player_hands">
+	</div>
+
+	
+	<div class="card red">A&hearts;</div>
+	<div class="card red">2&hearts;</div>
+	<div class="card red">3&hearts;</div>
+	<div class="card red">4&hearts;</div>
+	<div class="card red">5&hearts;</div>
+	<div class="card red">6&hearts;</div>
+	<div class="card red">7&hearts;</div>
+	<div class="card red">8&hearts;</div>
+	<div class="card red">9&hearts;</div>
+	<div class="card red">10&hearts;</div>
+	<div class="card red">J&hearts;</div>
+	<div class="card red">Q&hearts;</div>
+	<div class="card red">K&hearts;</div>
+
+	<br><br>
+	<div class="card black">A&spades;</div>
+	<div class="card black">2&spades;</div>
+	<div class="card black">3&spades;</div>
+	<div class="card black">4&spades;</div>
+	<div class="card black">5&spades;</div>
+	<div class="card black">6&spades;</div>
+	<div class="card black">7&spades;</div>
+	<div class="card black">8&spades;</div>
+	<div class="card black">9&spades;</div>
+	<div class="card black">10&spades;</div>
+	<div class="card black">J&spades;</div>
+	<div class="card black">Q&spades;</div>
+	<div class="card black">K&spades;</div>
+	<br><br>
+	<div class="card red">A&diams;</div>
+	<div class="card red">2&diams;</div>
+	<div class="card red">3&diams;</div>
+	<div class="card red">4&diams;</div>
+	<div class="card red">5&diams;</div>
+	<div class="card red">6&diams;</div>
+	<div class="card red">7&diams;</div>
+	<div class="card red">8&diams;</div>
+	<div class="card red">9&diams;</div>
+	<div class="card red">10&diams;</div>
+	<div class="card red">J&diams;</div>
+	<div class="card red">Q&diams;</div>
+	<div class="card red">K&diams;</div>
+	<br><br>
+	<div class="card black">A&clubs;</div>
+	<div class="card black">2&clubs;</div>
+	<div class="card black">3&clubs;</div>
+	<div class="card black">4&clubs;</div>
+	<div class="card black">5&clubs;</div>
+	<div class="card black">6&clubs;</div>
+	<div class="card black">7&clubs;</div>
+	<div class="card black">8&clubs;</div>
+	<div class="card black">9&clubs;</div>
+	<div class="card black">10&clubs;</div>
+	<div class="card black">J&clubs;</div>
+	<div class="card black">Q&clubs;</div>
+	<div class="card black">K&clubs;</div>
+	<br><br>
+
+	<label>Your Cards: </label>
+	<div class="card2" id="pc1"></div>
+	<div class="card2" id="pc2"></div>
+	<input type="submit" id="submit" value="Calculate">
+	<br><br>
+	<div id="table_div"></div>
+	</div>
+	
+
+</body>
+</html>
